@@ -337,6 +337,10 @@ class LambdaHandler(object):
             is_event_bridge_record = "detail-type" in body and "source" in body
             if is_event_bridge_record:
                 return self.settings.EVENT_BRIDGE_HANDLER
+        elif 'eventSource' in record and record.get('eventSource') == 'aws:appsync':
+            is_appsync_event = "authorizationToken" in record or record.get("source") == "GRAPHQL"
+            if is_appsync_event:
+                return self.settings.APPSYNC_HANDLER
 
         if arn:
             return self.settings.AWS_EVENT_MAPPING.get(arn)

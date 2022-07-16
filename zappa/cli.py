@@ -113,6 +113,7 @@ class ZappaCLI(object):
     aws_kms_key_arn = ''
     web_socket_handler = None
     event_bridge_handler = None
+    appsync_handler = None
 
     cognito_authorizer_path = '/'
 
@@ -1829,6 +1830,9 @@ class ZappaCLI(object):
         self.event_bridge_handler = \
             self.stage_config.get("event_bridge_handler")
 
+        # custom zappa settings key for aws appsync
+        self.appsync_handler = self.stage_config.get("appsync_handler")
+
         desired_role_name = self.lambda_name + "-ZappaLambdaExecutionRole"
         self.zappa = Zappa( boto_session=session,
                             profile_name=self.profile_name,
@@ -2112,6 +2116,13 @@ class ZappaCLI(object):
                     self.event_bridge_handler)
             else:
                 settings_s += "EVENT_BRIDGE_HANDLER=None\n"
+
+            # event bridge function
+            if self.appsync_handler:
+                settings_s += "APPSYNC_HANDLER='{0!s}'\n".format(
+                    self.appsync_handler)
+            else:
+                settings_s += "APPSYNC_HANDLER=None\n"
 
             # Copy our Django app into root of our package.
             # It doesn't work otherwise.
